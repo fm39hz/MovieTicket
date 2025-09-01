@@ -1,16 +1,38 @@
 @startuml
 left to right direction
-skinparam packageStyle rectangle
+actor "Người dùng" as User
+actor "Quản lý" as Admin
 
-actor User
-actor Admin
+rectangle "Hệ thống đặt vé xem phim" {
+  usecase "Chỉnh sửa thông tin cá nhân" as UC1
+  usecase "Đăng ký" as UC2
+  usecase "Nạp tiền" as UC3
+  usecase "Xem lịch chiếu phim" as UC4
+  usecase "Xem ghế trống" as UC5
+  usecase "Đăng nhập" as UC6
 
-rectangle "Personal Task Management System" {
-  usecase "Task Management" as ManageTask
-  usecase "Crud Actions" as CRUD
-  ManageTask --> CRUD : <<include>>
-  User --> ManageTask
-  Admin --> ManageTask
+  usecase "Thêm phim" as UC7
+  usecase "Xóa phim" as UC8
+  usecase "Chỉnh sửa thông tin phim" as UC9
+  usecase "Thêm lịch chiếu phim" as UC10
+  usecase "Xóa lịch chiếu phim" as UC11
+  usecase "Chỉnh sửa lịch chiếu phim" as UC12
+  usecase "Xem thống kê" as UC13
 }
 
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC6
 @enduml
