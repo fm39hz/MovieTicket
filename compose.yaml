@@ -1,6 +1,6 @@
 services:
-    timmer.api:
-        image: timmer.api
+    api:
+        image: api
         build:
             context: .
             dockerfile: MovieTicket.Api/Dockerfile
