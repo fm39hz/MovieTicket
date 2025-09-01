@@ -1,0 +1,8 @@
+services:
+    timmer.api:
+        image: timmer.api
+        build:
+            context: .
+            dockerfile: MovieTicket.Api/Dockerfile
+        ports:
+            - "8080:8080"
