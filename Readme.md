@@ -16,4 +16,4 @@
     cd MovieTicket
     ```
 
-- Start project: `dotnet run`
+- Start project: `dotnet run --project src/MovieTicket.Api/MovieTicket.Api.csproj`
