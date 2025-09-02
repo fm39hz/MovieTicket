@@ -14,7 +14,8 @@ public static class Program {
 			app.UseHsts();
 			app.MapOpenApi();
 			app.UseExceptionHandler(new ExceptionHandlerOptions {
-				AllowStatusCode404Response = true, ExceptionHandlingPath = "/error"
+				AllowStatusCode404Response = true,
+				ExceptionHandlingPath = "/error"
 			});
 			{
 				await using var scope = app.Services.CreateAsyncScope();
