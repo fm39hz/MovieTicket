@@ -11,7 +11,7 @@ public interface IReadOneController<TModel, TResponse>
 	///     Find one entity with id in database
 	/// </summary>
 	/// <param name="id">Id of model</param>
-	/// <returns></returns>
+	/// <returns>Result entity</returns>
 	public Task<IValueHttpResult<TResponse>> FindOne(Guid id);
 }
 
@@ -21,7 +21,7 @@ public interface IReadAllController<TModel, TResponse>
 	/// <summary>
 	///     Find all entity in database
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>Result Entities</returns>
 	public Task<IValueHttpResult<IEnumerable<TResponse>>> FindAll();
 }
 
@@ -33,7 +33,7 @@ public interface ICreateController<TModel, TResponse, in TRequest>
 	///     Create new entity in database
 	/// </summary>
 	/// <param name="entity">the entity value</param>
-	/// <returns></returns>
+	/// <returns>Create result</returns>
 	public Task<IValueHttpResult<TResponse>> Create(TRequest entity);
 }
 
@@ -45,7 +45,8 @@ public interface IUpdateController<TModel, TResponse, in TRequest>
 	///     Delete one entity that has id
 	/// </summary>
 	/// <param name="id">Id of model</param>
-	/// <returns></returns>
+	/// <param name="entity">Modified entity</param>
+	/// <returns>Result</returns>
 	public Task<IValueHttpResult<TResponse>> Update(Guid id, TRequest entity);
 }
 
@@ -67,5 +68,4 @@ public interface ICrudController<TModel, TResponse, in TRequest> :
 	IDeleteController<TModel>
 	where TModel : IModel
 	where TResponse : IResponseDto
-	where TRequest : IRequestDto<TModel> {
-}
+	where TRequest : IRequestDto<TModel>;
