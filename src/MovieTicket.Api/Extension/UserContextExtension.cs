@@ -19,11 +19,12 @@ public static class DatabaseContextExtension {
 		service.AddSingleton(userSeed);
 		service.AddTransient<AdminSeeder>();
 		service.AddTransient<UserSeeder>();
+		service.AddTransient<MovieSeeder>();
 		service.AddTransient<DatabaseSeeder>();
 
 		service.AddDbContext<ApplicationDbContext>(optionsBuilder => {
 			optionsBuilder.UseMySQL().UseSnakeCaseNamingConvention();
-			var seeders = new List<ISeeder> { new AdminSeeder(userSeed), new UserSeeder() };
+			var seeders = new List<ISeeder> { new AdminSeeder(userSeed), new UserSeeder(), new MovieSeeder() };
 			var databaseSeeder = new DatabaseSeeder(seeders);
 			optionsBuilder.UseSeeding((context, _) => databaseSeeder.SeedAll(context))
 				.UseAsyncSeeding(async (context, _, cancellationToken) =>

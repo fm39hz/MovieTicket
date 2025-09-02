@@ -11,6 +11,8 @@ public static class ServiceExtension {
 	public static IServiceCollection AddServices(this IServiceCollection service) {
 		service.AddScoped<IUserRepository, UserRepository>();
 		service.AddScoped<IUserService, UserService>();
+		service.AddScoped<IMovieRepository, MovieRepository>();
+		service.AddScoped<IMovieService, MovieService>();
 		return service;
 	}
 }

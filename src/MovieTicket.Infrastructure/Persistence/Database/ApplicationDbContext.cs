@@ -1,5 +1,6 @@
 namespace MovieTicket.Infrastructure.Persistence.Database;
 
+using Domain.Entity.Movie;
 using Domain.Entity.User;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
