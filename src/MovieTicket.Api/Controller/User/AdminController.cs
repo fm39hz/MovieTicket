@@ -13,13 +13,17 @@ public sealed class AdminController(IUserService service) : ControllerBase, IAdm
 	[HttpGet("{id:guid}")]
 	public async Task<IValueHttpResult<UserResponseDto>> FindOne(Guid id) {
 		var user = await service.FindOne(id);
-		return user == null ? TypedResults.NotFound<UserResponseDto>(null) : TypedResults.Ok(new UserResponseDto(user));
+		if (user == null || !user.Role.HasFlag(Roles.Admin)) {
+			return TypedResults.NotFound<UserResponseDto>(null);
+		}
+		return TypedResults.Ok(new UserResponseDto(user));
 	}
 
 	[HttpGet]
 	public async Task<IValueHttpResult<IEnumerable<UserResponseDto>>> FindAll() {
 		var users = await service.FindAll();
-		var dtos = users.Select(user => new UserResponseDto(user)).ToList();
+		var adminUsers = users.Where(user => user.Role.HasFlag(Roles.Admin));
+		var dtos = adminUsers.Select(user => new UserResponseDto(user)).ToList();
 		return TypedResults.Ok(dtos);
 	}
 
