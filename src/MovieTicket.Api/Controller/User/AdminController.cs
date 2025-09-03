@@ -13,10 +13,9 @@ public sealed class AdminController(IUserService service) : ControllerBase, IAdm
 	[HttpGet("{id:guid}")]
 	public async Task<IValueHttpResult<UserResponseDto>> FindOne(Guid id) {
 		var user = await service.FindOne(id);
-		if (user == null || !user.Role.HasFlag(Roles.Admin)) {
-			return TypedResults.NotFound<UserResponseDto>(null);
-		}
-		return TypedResults.Ok(new UserResponseDto(user));
+		return user?.Role.HasFlag(Roles.Admin) != true
+			? TypedResults.NotFound<UserResponseDto>(null)
+			: TypedResults.Ok(new UserResponseDto(user));
 	}
 
 	[HttpGet]
