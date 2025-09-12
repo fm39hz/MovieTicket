@@ -5,7 +5,7 @@ using Application.Service.Contract;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MovieTicket.Application.Dto.Common;
+using Application.Dto.Common;
 
 [ApiController]
 [Route(RouteConstant.CONTROLLER)]
@@ -48,7 +48,7 @@ public sealed class MovieController(IMovieService service) : ControllerBase, IMo
 
 	[HttpGet("search")]
 	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] MovieSearchRequestDto searchRequest) {
+	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] MovieSearchRequestDto searchRequest, [FromQuery] PaginationRequestDto? pagination) {
 		var movies = await service.Search(searchRequest);
 		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
 	}
