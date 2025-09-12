@@ -29,7 +29,7 @@ public sealed class MovieController(IMovieService service) : ControllerBase, IMo
 	[Authorize(RoleConstant.ADMIN)]
 	public async Task<IValueHttpResult<MovieResponseDto>> Create([FromBody] MovieRequestDto entity) {
 		var movie = await service.Create(entity.ToModel());
-		return TypedResults.Created($"/api/v1/movie/{movie.Id}", new MovieResponseDto(movie));
+		return TypedResults.Created($"{movie.Id}", new MovieResponseDto(movie));
 	}
 
 	[HttpPut("{id:guid}")]
