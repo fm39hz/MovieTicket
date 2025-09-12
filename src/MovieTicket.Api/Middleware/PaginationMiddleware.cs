@@ -1,7 +1,9 @@
 namespace MovieTicket.Api.Middleware;
 
+using System.Reflection;
 using System.Text.Json;
 using Application.Dto.Common;
+using Microsoft.AspNetCore.Mvc;
 
 public class PaginationMiddleware(RequestDelegate next) {
 	private static readonly JsonSerializerOptions _jsonOptions = new() {
@@ -14,7 +16,7 @@ public class PaginationMiddleware(RequestDelegate next) {
 		await using var responseBody = new MemoryStream();
 		context.Response.Body = responseBody;
 
-		var hasPaginationParams = HasPaginationParameters(context.Request);
+		var hasPaginationParams = HasPaginationRequestDtoParameter(context);
 
 		if (hasPaginationParams) {
 			context.Items["PaginationRequest"] = ExtractPaginationRequest(context.Request);
@@ -31,10 +33,23 @@ public class PaginationMiddleware(RequestDelegate next) {
 		}
 	}
 
-	private static bool HasPaginationParameters(HttpRequest request) => request.Query.ContainsKey("page") ||
-			   request.Query.ContainsKey("pageSize") ||
-			   request.Query.ContainsKey("sortBy") ||
-			   request.Query.ContainsKey("sortDescending");
+	private static bool HasPaginationRequestDtoParameter(HttpContext context) {
+		var endpoint = context.GetEndpoint();
+		if (endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor>() is not { } actionDescriptor) {
+			return false;
+		}
+
+		var methodInfo = actionDescriptor.MethodInfo;
+		var parameters = methodInfo.GetParameters();
+
+		return parameters.Any(static param => {
+			var paramType = param.ParameterType;
+			var underlyingType = Nullable.GetUnderlyingType(paramType);
+			var actualType = underlyingType ?? paramType;
+			return actualType == typeof(PaginationRequestDto) &&
+				   param.GetCustomAttributes<FromQueryAttribute>().Any();
+		});
+	}
 
 	private static PaginationRequestDto ExtractPaginationRequest(HttpRequest request) {
 		var paginationRequest = new PaginationRequestDto();
@@ -188,22 +203,21 @@ public class PaginationMiddleware(RequestDelegate next) {
 			return items;
 		}
 
-		try {
-			var sortedItems = items.OrderBy<JsonElement, object?>(item => item.TryGetProperty(sortBy, out var property)
-					? property.ValueKind switch {
-						JsonValueKind.String => property.GetString(),
-						JsonValueKind.Number => property.GetDecimal(),
-						JsonValueKind.True => true,
-						JsonValueKind.False => false,
-						_ => item.ToString()
-					}
-					: null);
+		var sortedItems = items.OrderBy<JsonElement, object?>(item => item.TryGetProperty(sortBy, out var property)
+				? property.ValueKind switch {
+					JsonValueKind.String => property.GetString(),
+					JsonValueKind.Number => property.GetDecimal(),
+					JsonValueKind.True => true,
+					JsonValueKind.False => false,
+					JsonValueKind.Undefined => null,
+					JsonValueKind.Null => null,
+					JsonValueKind.Object => property.EnumerateObject(),
+					JsonValueKind.Array => property.EnumerateArray(),
+					_ => item.ToString()
+				}
+				: null);
 
-			return sortDescending ? sortedItems.Reverse() : sortedItems;
-		}
-		catch {
-			return items;
-		}
+		return sortDescending ? sortedItems.Reverse() : sortedItems;
 	}
 
 	private static async Task WriteResponse(Stream originalBodyStream, string content, HttpResponse response) {

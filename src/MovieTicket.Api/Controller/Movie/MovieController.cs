@@ -5,6 +5,7 @@ using Application.Service.Contract;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieTicket.Application.Dto.Common;
 
 [ApiController]
 [Route(RouteConstant.CONTROLLER)]
@@ -19,7 +20,7 @@ public sealed class MovieController(IMovieService service) : ControllerBase, IMo
 
 	[HttpGet]
 	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> FindAll() {
+	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> FindAll([FromQuery] PaginationRequestDto? pagination) {
 		var movies = await service.FindAll();
 		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
 	}
@@ -54,7 +55,7 @@ public sealed class MovieController(IMovieService service) : ControllerBase, IMo
 
 	[HttpGet("search")]
 	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] string title) {
+	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] string title, [FromQuery] PaginationRequestDto? pagination) {
 		var movies = await service.FindByTitle(title);
 		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
 	}

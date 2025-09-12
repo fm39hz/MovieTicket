@@ -17,6 +17,6 @@ public sealed class UserController(IUserService service) : ControllerBase, IUser
 	}
 
 	[HttpPut("{id:guid}")]
-	public async Task<IValueHttpResult<UserResponseDto>> Update(Guid id, [FromBody] UserRequestDto entity) =>
+	public async Task<IValueHttpResult<UserResponseDto>> Update(Guid id, [FromQuery] UserRequestDto entity) =>
 		TypedResults.Ok(new UserResponseDto(await service.Update(id, entity.ToModel())));
 }

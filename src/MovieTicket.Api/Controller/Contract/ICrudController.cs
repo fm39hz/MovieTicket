@@ -21,8 +21,9 @@ public interface IReadAllController<TModel, TResponse>
 	/// <summary>
 	///     Find all entity in database
 	/// </summary>
+	/// <param name="pagination">pagination input</param>
 	/// <returns>Result Entities</returns>
-	public Task<IValueHttpResult<IEnumerable<TResponse>>> FindAll();
+	public Task<IValueHttpResult<IEnumerable<TResponse>>> FindAll(PaginationRequestDto? pagination = null);
 }
 
 public interface ICreateController<TModel, TResponse, in TRequest>

@@ -1,6 +1,7 @@
 namespace MovieTicket.Api.Controller.User;
 
 using Application.Dto.User;
+using Application.Dto.Common;
 using Application.Service.Contract;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,7 @@ public sealed class AdminController(IUserService service) : ControllerBase, IAdm
 	}
 
 	[HttpGet]
-	public async Task<IValueHttpResult<IEnumerable<UserResponseDto>>> FindAll() {
+	public async Task<IValueHttpResult<IEnumerable<UserResponseDto>>> FindAll([FromQuery] PaginationRequestDto? pagination) {
 		var users = await service.FindAll();
 		var adminUsers = users.Where(user => user.Role.HasFlag(Roles.Admin));
 		var dtos = adminUsers.Select(user => new UserResponseDto(user)).ToList();

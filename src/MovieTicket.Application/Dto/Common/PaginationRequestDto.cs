@@ -2,11 +2,9 @@ namespace MovieTicket.Application.Dto.Common;
 
 using System.ComponentModel;
 
-public class PaginationRequestDto {
-	[DefaultValue(1)]
-	public int Page { get; set; } = 1;
-	[DefaultValue(10)]
-	public int PageSize { get; set; } = 10;
+public record PaginationRequestDto {
+	[DefaultValue(1)] public int Page { get; set; }
+	[DefaultValue(10)] public int PageSize { get; set; }
 	public string? SortBy { get; set; }
 	public bool SortDescending { get; set; }
 
