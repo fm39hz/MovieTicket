@@ -3,6 +3,7 @@ namespace MovieTicket.Application.Service.Implementation;
 using Contract;
 using Domain.Common.Repository;
 using Domain.Entity.Movie;
+using Dto.Movie;
 
 public sealed class MovieService(IMovieRepository repository) : IMovieService {
 	public async Task<MovieModel?> FindOne(Guid id) => await repository.FindOne(id);
@@ -23,4 +24,7 @@ public sealed class MovieService(IMovieRepository repository) : IMovieService {
 	public async Task<IEnumerable<MovieModel>> FindByTitle(string title) => await repository.FindByTitle(title);
 
 	public async Task<IEnumerable<MovieModel>> FindByRating(decimal minRating) => await repository.FindByRating(minRating);
+
+	public async Task<IEnumerable<MovieModel>> Search(MovieSearchRequestDto searchRequest) => 
+		await repository.Search(searchRequest.Title, searchRequest.Genre, searchRequest.MinRating);
 }

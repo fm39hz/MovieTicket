@@ -46,24 +46,10 @@ public sealed class MovieController(IMovieService service) : ControllerBase, IMo
 		return TypedResults.Ok(result);
 	}
 
-	[HttpGet("genre/{genre}")]
-	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> FindByGenre(string genre) {
-		var movies = await service.FindByGenre(genre);
-		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
-	}
-
 	[HttpGet("search")]
 	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] string title, [FromQuery] PaginationRequestDto? pagination) {
-		var movies = await service.FindByTitle(title);
-		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
-	}
-
-	[HttpGet("rating/{minRating:decimal}")]
-	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> FindByRating(decimal minRating) {
-		var movies = await service.FindByRating(minRating);
+	public async Task<IValueHttpResult<IEnumerable<MovieResponseDto>>> Search([FromQuery] MovieSearchRequestDto searchRequest) {
+		var movies = await service.Search(searchRequest);
 		return TypedResults.Ok(movies.Select(m => new MovieResponseDto(m)));
 	}
 }

@@ -20,4 +20,22 @@ public sealed class MovieRepository(ApplicationDbContext context) : CrudReposito
 		await Entities
 			.Where(m => m.Rating >= minRating)
 			.ToListAsync();
+
+	public async Task<IEnumerable<MovieModel>> Search(string? title, string? genre, decimal? minRating) {
+		var query = Entities.AsQueryable();
+
+		if (!string.IsNullOrWhiteSpace(title)) {
+			query = query.Where(m => m.Title.Contains(title));
+		}
+
+		if (!string.IsNullOrWhiteSpace(genre)) {
+			query = query.Where(m => m.Genre.Contains(genre));
+		}
+
+		if (minRating.HasValue) {
+			query = query.Where(m => m.Rating >= minRating.Value);
+		}
+
+		return await query.ToListAsync();
+	}
 }
