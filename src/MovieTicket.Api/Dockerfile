@@ -7,10 +7,21 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["MovieTicket.Api/MovieTicket.Api.csproj", "MovieTicket.Api/"]
-RUN dotnet restore "MovieTicket.Api/MovieTicket.Api.csproj"
-COPY . .
-WORKDIR "/src/MovieTicket.Api"
+
+# Copy all project files for dependency resolution
+COPY ["src/MovieTicket.Api/MovieTicket.Api.csproj", "src/MovieTicket.Api/"]
+COPY ["src/MovieTicket.Application/MovieTicket.Application.csproj", "src/MovieTicket.Application/"]
+COPY ["src/MovieTicket.Infrastructure/MovieTicket.Infrastructure.csproj", "src/MovieTicket.Infrastructure/"]
+COPY ["src/MovieTicket.Domain/MovieTicket.Domain.csproj", "src/MovieTicket.Domain/"]
+
+# Restore dependencies
+RUN dotnet restore "src/MovieTicket.Api/MovieTicket.Api.csproj"
+
+# Copy the entire source code
+COPY src/ src/
+
+# Build the application
+WORKDIR "/src/src/MovieTicket.Api"
 RUN dotnet build "MovieTicket.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

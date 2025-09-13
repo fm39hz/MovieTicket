@@ -1,8 +1,33 @@
 services:
+    mariadb:
+        image: mariadb:10.11
+        container_name: movieticket-db
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: movieticket
+            MYSQL_USER: Admin
+            MYSQL_PASSWORD: TesT
+        ports:
+            - "3307:3306"
+        volumes:
+            - mariadb_data:/var/lib/mysql
+        restart: unless-stopped
+
     api:
-        image: api
+        image: movieticket-api
+        container_name: movieticket-api
         build:
             context: .
-            dockerfile: MovieTicket.Api/Dockerfile
+            dockerfile: src/MovieTicket.Api/Dockerfile
         ports:
             - "8080:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__MariaDb=server=mariadb;user id=Admin;password=TesT;database=movieticket
+            - OpenApi__ServerUrl=http://localhost:8080
+        depends_on:
+            - mariadb
+        restart: unless-stopped
+
+volumes:
+    mariadb_data:
