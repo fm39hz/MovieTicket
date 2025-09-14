@@ -14,14 +14,10 @@ public static class AuthorizationExtension {
 		var jwtConfiguration = new JwtConfiguration(configuration);
 		services.AddSingleton<ITokenGenerator, TokenGenerator>();
 		services.AddAuthorizationBuilder()
-			.AddPolicy(RoleConstant.ADMIN, policy => {
-				policy.RequireClaim(ClaimTypes.Role, RoleConstant.ADMIN);
-				policy.RequireRole(RoleConstant.ADMIN);
-			})
-			.AddPolicy(RoleConstant.USER, policy => {
-				policy.RequireClaim(ClaimTypes.Role, RoleConstant.USER, RoleConstant.ADMIN);
-				policy.RequireRole(RoleConstant.USER, RoleConstant.ADMIN);
-			});
+			.AddPolicy(RoleConstant.ADMIN, policy => policy.RequireClaim(ClaimTypes.Role, RoleConstant.ADMIN)
+					.RequireRole(RoleConstant.ADMIN))
+			.AddPolicy(RoleConstant.USER, policy => policy.RequireClaim(ClaimTypes.Role, RoleConstant.USER, RoleConstant.ADMIN)
+					.RequireRole(RoleConstant.USER, RoleConstant.ADMIN));
 		services.AddAuthentication()
 			.AddJwtBearer(opt => opt.TokenValidationParameters = new TokenValidationParameters {
 				IssuerSigningKey = new SymmetricSecurityKey(jwtConfiguration.Key),

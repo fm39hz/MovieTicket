@@ -4,7 +4,7 @@ namespace MovieTicket.Domain.Constant;
 public enum Roles {
 	None = 0,
 	User = 1,
-	Admin = 2
+	Admin = 1 << 1
 }
 
 public static class RoleConstant {

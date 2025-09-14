@@ -13,7 +13,7 @@ public class UserValidationMiddleware(RequestDelegate next) {
 		var pathSegments = context.Request.Path.Value?.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
 		var user = context.User;
 		if (pathSegments is not { Length: > 0 } ||
-			!Guid.TryParse(pathSegments.Last(), out var parsedId) ||
+			!Guid.TryParse(pathSegments[^1], out var parsedId) ||
 			user.Identity?.IsAuthenticated != true ||
 			user.ValidateScope(parsedId)
 			) {

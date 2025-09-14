@@ -4,6 +4,7 @@ using Domain.Constant;
 using Extension;
 using Infrastructure.Persistence.Database;
 using Microsoft.OpenApi.Models;
+using Api.Transformer;
 using Scalar.AspNetCore;
 
 public static class Program {
@@ -46,15 +47,13 @@ public static class Program {
 	private static WebApplication Build(WebApplicationBuilder builder) {
 		var serverUrl = builder.Configuration["OpenApi:ServerUrl"] ?? "http://localhost:8080";
 
-		builder.Services.AddOpenApi(options => {
-			options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-			options.AddDocumentTransformer((document, context, cancellationToken) => {
-				document.Servers = [
-					new() { Url = serverUrl, Description = "API Server" }
-				];
-				return Task.CompletedTask;
-			});
-		});
+		builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>()
+				.AddDocumentTransformer((document, context, cancellationToken) => {
+					document.Servers = [
+						new() { Url = serverUrl, Description = "API Server" }
+					];
+					return Task.CompletedTask;
+				}));
 		builder.Services.AddLogging(static logging => logging.AddFilter(
 				"Microsoft.EntityFrameworkCore.Database.Command",
 				LogLevel.Warning)

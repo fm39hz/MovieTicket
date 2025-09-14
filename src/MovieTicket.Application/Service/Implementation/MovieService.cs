@@ -25,6 +25,6 @@ public sealed class MovieService(IMovieRepository repository) : IMovieService {
 
 	public async Task<IEnumerable<MovieModel>> FindByRating(decimal minRating) => await repository.FindByRating(minRating);
 
-	public async Task<IEnumerable<MovieModel>> Search(MovieSearchRequestDto searchRequest) => 
+	public async Task<IEnumerable<MovieModel>> Search(MovieSearchRequestDto searchRequest) =>
 		await repository.Search(searchRequest.Title, searchRequest.Genre, searchRequest.MinRating);
 }

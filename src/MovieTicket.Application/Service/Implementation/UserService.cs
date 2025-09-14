@@ -18,22 +18,20 @@ public sealed class UserService(IUserRepository repository) : IUserService {
 		}
 
 		var isPasswordValid = PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-		return isPasswordValid == PasswordVerificationResult.Failed? null : user;
+		return isPasswordValid == PasswordVerificationResult.Failed ? null : user;
 	}
 
 	public async Task<IEnumerable<UserModel>> FindAll() => await repository.FindAll();
 
 	public async Task<UserModel> Create(UserModel entity) {
 		var hashedPassword = PasswordHasher.HashPassword(entity, entity.PasswordHash);
-		var result = await repository.Create(new UserModel(entity) { PasswordHash = hashedPassword });
-		return result;
+		return await repository.Create(new UserModel(entity) { PasswordHash = hashedPassword });
 	}
 
 	public async Task<UserModel> Update(Guid id, UserModel entity) {
 		var hashedPassword = PasswordHasher.HashPassword(entity, entity.PasswordHash);
 		var user = new UserModel(entity) { Id = id, PasswordHash = hashedPassword };
-		var result = await repository.Update(user);
-		return result;
+		return await repository.Update(user);
 	}
 
 	public async Task<int> Delete(Guid id) => await repository.Delete(id);
