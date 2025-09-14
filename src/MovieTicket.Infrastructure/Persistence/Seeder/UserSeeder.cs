@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 public class UserSeeder : ISeeder {
-	private const int TARGET_SEED_NUMBER = 50;
+	private const int TARGET_SEED_NUMBER = 10;
 
 	public bool SeedData(DbContext context) {
 		var userCount = context.Set<UserModel>().Count();
