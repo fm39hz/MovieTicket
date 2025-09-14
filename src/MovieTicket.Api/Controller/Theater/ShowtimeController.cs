@@ -73,4 +73,13 @@ public sealed class ShowtimeController(IShowtimeService service) : ControllerBas
 		var showtimes = await service.FindAvailableShowtimes(movieId, showDate);
 		return TypedResults.Ok(showtimes.Select(s => new ShowtimeResponseDto(s)));
 	}
+
+	[HttpGet("{id:guid}/seats")]
+	[AllowAnonymous]
+	public async Task<IValueHttpResult<SeatAvailabilityDto>> GetSeatAvailability(Guid id) {
+		var seatAvailability = await service.GetSeatAvailability(id);
+		return seatAvailability == null
+			? TypedResults.NotFound<SeatAvailabilityDto>(null)
+			: TypedResults.Ok(seatAvailability);
+	}
 }

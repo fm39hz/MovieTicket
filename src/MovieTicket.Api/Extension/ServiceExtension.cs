@@ -13,6 +13,15 @@ public static class ServiceExtension {
 		service.AddScoped<IUserService, UserService>();
 		service.AddScoped<IMovieRepository, MovieRepository>();
 		service.AddScoped<IMovieService, MovieService>();
+		service.AddScoped<ITheaterRepository, TheaterRepository>();
+		service.AddScoped<ITheaterService, TheaterService>();
+		service.AddScoped<IScreenRepository, ScreenRepository>();
+		service.AddScoped<IScreenService, ScreenService>();
+		service.AddScoped<IShowtimeRepository, ShowtimeRepository>();
+		service.AddScoped<IShowtimeService, ShowtimeService>();
+		service.AddScoped<IBookingRepository, BookingRepository>();
+		service.AddScoped<IBookingService, BookingService>();
+		service.AddScoped<IStatisticsService, StatisticsService>();
 		return service;
 	}
 }

@@ -1,6 +1,7 @@
 namespace MovieTicket.Application.Service.Contract;
 
 using Domain.Entity.Theater;
+using Dto.Theater;
 
 public interface IShowtimeService : ICrudService<ShowtimeModel> {
 	public Task<IEnumerable<ShowtimeModel>> FindByMovieId(Guid movieId);
@@ -11,4 +12,5 @@ public interface IShowtimeService : ICrudService<ShowtimeModel> {
 	public Task<IEnumerable<ShowtimeModel>> FindAvailableShowtimes(Guid movieId, DateOnly? showDate = null);
 	public Task<IEnumerable<ShowtimeModel>> FindNowPlaying();
 	public Task<IEnumerable<ShowtimeModel>> FindByMovieAndTheater(Guid movieId, Guid theaterId);
+	public Task<SeatAvailabilityDto?> GetSeatAvailability(Guid showtimeId);
 }

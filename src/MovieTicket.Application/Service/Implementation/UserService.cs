@@ -21,6 +21,23 @@ public sealed class UserService(IUserRepository repository) : IUserService {
 		return isPasswordValid == PasswordVerificationResult.Failed ? null : user;
 	}
 
+	public async Task<UserModel?> Register(string name, string email, string password) {
+		var existingUser = await repository.FindOneByEmail(email);
+		if (existingUser != null) {
+			return null;
+		}
+
+		var newUser = new UserModel {
+			Name = name,
+			Email = email,
+			Role = Domain.Constant.Roles.User,
+			IsVerified = false,
+			PasswordHash = password
+		};
+
+		return await Create(newUser);
+	}
+
 	public async Task<IEnumerable<UserModel>> FindAll() => await repository.FindAll();
 
 	public async Task<UserModel> Create(UserModel entity) {

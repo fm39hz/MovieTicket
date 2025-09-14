@@ -3,6 +3,7 @@ namespace MovieTicket.Api.Controller.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Application.Dto.Authorization;
+using Application.Dto.User;
 using Application.Service.Contract;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,18 @@ public class AuthorizationController(IUserService userService, ITokenGenerator t
 		var accessToken = tokenGenerator.GenerateToken(user);
 		var refreshToken = tokenGenerator.GenerateToken(user, true);
 		var response = new LoginResponseDto(accessToken, refreshToken);
+		return TypedResults.Ok(response);
+	}
+
+	[AllowAnonymous]
+	[HttpPost("register")]
+	public async Task<IResult> Register([FromBody] RegisterRequestDto request) {
+		var user = await userService.Register(request.Name, request.Email, request.Password);
+		if (user == null) {
+			return TypedResults.Conflict("Email already exists");
+		}
+
+		var response = new UserResponseDto(user);
 		return TypedResults.Ok(response);
 	}
 

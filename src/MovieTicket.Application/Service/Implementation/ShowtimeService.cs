@@ -3,6 +3,7 @@ namespace MovieTicket.Application.Service.Implementation;
 using Contract;
 using Domain.Common.Repository;
 using Domain.Entity.Theater;
+using Dto.Theater;
 
 public sealed class ShowtimeService(IShowtimeRepository repository) : IShowtimeService {
 	public async Task<ShowtimeModel?> FindOne(Guid id) => await repository.FindOne(id);
@@ -33,4 +34,24 @@ public sealed class ShowtimeService(IShowtimeRepository repository) : IShowtimeS
 	public async Task<IEnumerable<ShowtimeModel>> FindNowPlaying() => await repository.FindNowPlaying();
 
 	public async Task<IEnumerable<ShowtimeModel>> FindByMovieAndTheater(Guid movieId, Guid theaterId) => await repository.FindByMovieAndTheater(movieId, theaterId);
+
+	public async Task<SeatAvailabilityDto?> GetSeatAvailability(Guid showtimeId) {
+		var showtime = await repository.FindOne(showtimeId);
+		if (showtime?.Screen == null) return null;
+
+		var totalSeats = showtime.Screen.TotalSeats;
+		var bookedSeatsList = string.IsNullOrEmpty(showtime.BookedSeats)
+			? new List<string>()
+			: showtime.BookedSeats.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+		var bookedSeatsCount = bookedSeatsList.Count;
+		var availableSeats = totalSeats - bookedSeatsCount;
+
+		return new SeatAvailabilityDto {
+			TotalSeats = totalSeats,
+			AvailableSeats = availableSeats,
+			BookedSeatsCount = bookedSeatsCount,
+			BookedSeatsList = bookedSeatsList
+		};
+	}
 }

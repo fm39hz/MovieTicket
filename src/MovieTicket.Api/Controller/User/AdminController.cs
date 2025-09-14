@@ -2,6 +2,7 @@ namespace MovieTicket.Api.Controller.User;
 
 using Application.Dto.User;
 using Application.Dto.Common;
+using Application.Dto.Statistics;
 using Application.Service.Contract;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 [ApiController]
 [Route(RouteConstant.CONTROLLER)]
 [Authorize(RoleConstant.ADMIN)]
-public sealed class AdminController(IUserService service) : ControllerBase, IAdminController {
+public sealed class AdminController(IUserService service, IStatisticsService statisticsService) : ControllerBase, IAdminController {
 	[HttpGet("{id:guid}")]
 	public async Task<IValueHttpResult<UserResponseDto>> FindOne(Guid id) {
 		var user = await service.FindOne(id);
@@ -39,4 +40,22 @@ public sealed class AdminController(IUserService service) : ControllerBase, IAdm
 
 	[HttpDelete("{id:guid}")]
 	public async Task<IValueHttpResult<int>> Delete(Guid id) => TypedResults.Ok(await service.Delete(id));
+
+	[HttpGet("statistics/overview")]
+	public async Task<IValueHttpResult<StatisticsOverviewDto>> GetStatisticsOverview() {
+		var statistics = await statisticsService.GetOverview();
+		return TypedResults.Ok(statistics);
+	}
+
+	[HttpGet("statistics/revenue")]
+	public async Task<IValueHttpResult<RevenueStatisticsDto>> GetRevenueStatistics() {
+		var revenue = await statisticsService.GetRevenueStatistics();
+		return TypedResults.Ok(revenue);
+	}
+
+	[HttpGet("statistics/movies/popular")]
+	public async Task<IValueHttpResult<List<PopularMovieDto>>> GetPopularMovies([FromQuery] int limit = 10) {
+		var popularMovies = await statisticsService.GetPopularMovies(limit);
+		return TypedResults.Ok(popularMovies);
+	}
 }
