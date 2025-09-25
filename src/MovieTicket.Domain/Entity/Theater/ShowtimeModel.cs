@@ -27,13 +27,13 @@ public sealed record ShowtimeModel : BaseModel {
 	public Guid TheaterId { get; init; }
 
 	[Required]
-	public TimeOnly StartTime { get; init; }
+	public DateTime StartTime { get; init; }
 
 	[Required]
-	public TimeOnly EndTime { get; init; }
+	public DateTime EndTime { get; init; }
 
 	[Required]
-	public DateOnly Date { get; init; }
+	public DateTime Date { get; init; }
 
 	[Range(0.01, 999.99)]
 	public decimal TicketPrice { get; init; }

@@ -25,11 +25,11 @@ public sealed class ShowtimeService(IShowtimeRepository repository) : IShowtimeS
 
 	public async Task<IEnumerable<ShowtimeModel>> FindByScreenId(Guid screenId) => await repository.FindByScreenId(screenId);
 
-	public async Task<IEnumerable<ShowtimeModel>> FindByDate(DateOnly showDate) => await repository.FindByDate(showDate);
+	public async Task<IEnumerable<ShowtimeModel>> FindByDate(DateTime showDate) => await repository.FindByDate(showDate);
 
-	public async Task<IEnumerable<ShowtimeModel>> FindByDateRange(DateOnly fromDate, DateOnly toDate) => await repository.FindByDateRange(fromDate, toDate);
+	public async Task<IEnumerable<ShowtimeModel>> FindByDateRange(DateTime fromDate, DateTime toDate) => await repository.FindByDateRange(fromDate, toDate);
 
-	public async Task<IEnumerable<ShowtimeModel>> FindAvailableShowtimes(Guid movieId, DateOnly? showDate = null) => await repository.FindAvailableShowtimes(movieId, showDate);
+	public async Task<IEnumerable<ShowtimeModel>> FindAvailableShowtimes(Guid movieId, DateTime? showDate = null) => await repository.FindAvailableShowtimes(movieId, showDate);
 
 	public async Task<IEnumerable<ShowtimeModel>> FindNowPlaying() => await repository.FindNowPlaying();
 

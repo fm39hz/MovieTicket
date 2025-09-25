@@ -8,9 +8,9 @@ public class ShowtimeResponseDto(ShowtimeModel showtime) : IResponseDto {
 	public Guid MovieId { get; init; } = showtime.MovieId;
 	public Guid ScreenId { get; init; } = showtime.ScreenId;
 	public Guid TheaterId { get; init; } = showtime.TheaterId;
-	public TimeOnly StartTime { get; init; } = showtime.StartTime;
-	public TimeOnly EndTime { get; init; } = showtime.EndTime;
-	public DateOnly Date { get; init; } = showtime.Date;
+	public DateTime StartTime { get; init; } = showtime.StartTime;
+	public DateTime EndTime { get; init; } = showtime.EndTime;
+	public DateTime Date { get; init; } = showtime.Date;
 	public decimal TicketPrice { get; init; } = showtime.TicketPrice;
 	public int AvailableSeats { get; init; } = showtime.AvailableSeats;
 	public string BookedSeats { get; init; } = showtime.BookedSeats;

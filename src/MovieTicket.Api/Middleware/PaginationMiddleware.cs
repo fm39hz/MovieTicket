@@ -13,7 +13,7 @@ public class PaginationMiddleware(RequestDelegate next) {
 	public async Task InvokeAsync(HttpContext context) {
 		var originalBodyStream = context.Response.Body;
 
-		await using var responseBody = new MemoryStream();
+		using var responseBody = new MemoryStream();
 		context.Response.Body = responseBody;
 
 		var hasPaginationParams = HasPaginationRequestDtoParameter(context);
@@ -24,6 +24,8 @@ public class PaginationMiddleware(RequestDelegate next) {
 		}
 
 		await next(context);
+
+		context.Response.Body = originalBodyStream;
 
 		if (hasPaginationParams && context.Response.StatusCode == 200 && IsGetRequest(context.Request)) {
 			await ProcessPaginatedResponse(context, responseBody, originalBodyStream);

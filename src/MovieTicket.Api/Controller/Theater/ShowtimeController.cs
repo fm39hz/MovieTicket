@@ -69,7 +69,7 @@ public sealed class ShowtimeController(IShowtimeService service) : ControllerBas
 
 	[HttpGet("available/{movieId:guid}")]
 	[AllowAnonymous]
-	public async Task<IValueHttpResult<IEnumerable<ShowtimeResponseDto>>> FindAvailable(Guid movieId, [FromQuery] DateOnly? showDate = null) {
+	public async Task<IValueHttpResult<IEnumerable<ShowtimeResponseDto>>> FindAvailable(Guid movieId, [FromQuery] DateTime? showDate = null) {
 		var showtimes = await service.FindAvailableShowtimes(movieId, showDate);
 		return TypedResults.Ok(showtimes.Select(s => new ShowtimeResponseDto(s)));
 	}

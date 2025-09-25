@@ -9,7 +9,7 @@ public class UserValidationMiddleware(RequestDelegate next) {
 		LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1, nameof(UserIdDenial)),
 			"User id cannot access this scope: {Item}");
 
-	public async Task<IResult> InvokeAsync(HttpContext context, ILogger<IUserController> logger) {
+	public async Task InvokeAsync(HttpContext context, ILogger<IUserController> logger) {
 		var pathSegments = context.Request.Path.Value?.Split('/').Where(s => !string.IsNullOrEmpty(s)).ToArray();
 		var user = context.User;
 		if (pathSegments is not { Length: > 0 } ||
@@ -18,11 +18,12 @@ public class UserValidationMiddleware(RequestDelegate next) {
 			user.ValidateScope(parsedId)
 			) {
 			await next(context);
-			return Results.Ok();
+			return;
 		}
 
 		UserIdDenial(logger, parsedId);
-		return Results.BadRequest();
+		context.Response.StatusCode = 400;
+		await context.Response.WriteAsync("Bad Request");
 	}
 
 	public void UserIdDenial(ILogger logger, Guid userId) =>

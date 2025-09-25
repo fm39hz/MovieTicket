@@ -19,14 +19,18 @@ public static class AuthorizationExtension {
 			.AddPolicy(RoleConstant.USER, policy => policy.RequireClaim(ClaimTypes.Role, RoleConstant.USER, RoleConstant.ADMIN)
 					.RequireRole(RoleConstant.USER, RoleConstant.ADMIN));
 		services.AddAuthentication()
-			.AddJwtBearer(opt => opt.TokenValidationParameters = new TokenValidationParameters {
-				IssuerSigningKey = new SymmetricSecurityKey(jwtConfiguration.Key),
-				ValidateIssuer = true,
-				ValidateAudience = true,
-				ValidateIssuerSigningKey = true,
-				ValidateLifetime = true,
-				ValidAudience = jwtConfiguration.ValidAudience,
-				ValidIssuer = jwtConfiguration.ValidIssuer
+			.AddJwtBearer(opt => {
+				opt.TokenValidationParameters = new TokenValidationParameters {
+					IssuerSigningKey = new SymmetricSecurityKey(jwtConfiguration.Key),
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateIssuerSigningKey = true,
+					ValidateLifetime = true,
+					ValidAudience = jwtConfiguration.ValidAudience,
+					ValidIssuer = jwtConfiguration.ValidIssuer,
+					ClockSkew = TimeSpan.Zero,
+					RoleClaimType = ClaimTypes.Role
+				};
 			});
 		return services;
 	}

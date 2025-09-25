@@ -27,25 +27,25 @@ public sealed class ShowtimeRepository(ApplicationDbContext context) : CrudRepos
 			.ThenBy(s => s.StartTime)
 			.ToListAsync();
 
-	public async Task<IEnumerable<ShowtimeModel>> FindByDate(DateOnly showDate) =>
+	public async Task<IEnumerable<ShowtimeModel>> FindByDate(DateTime showDate) =>
 		await Entities
-			.Where(s => s.Date == showDate && s.Status == "Active")
+			.Where(s => s.Date.Date == showDate.Date && s.Status == "Active")
 			.OrderBy(s => s.StartTime)
 			.ToListAsync();
 
-	public async Task<IEnumerable<ShowtimeModel>> FindByDateRange(DateOnly fromDate, DateOnly toDate) =>
+	public async Task<IEnumerable<ShowtimeModel>> FindByDateRange(DateTime fromDate, DateTime toDate) =>
 		await Entities
-			.Where(s => s.Date >= fromDate && s.Date <= toDate && s.Status == "Active")
+			.Where(s => s.Date.Date >= fromDate.Date && s.Date.Date <= toDate.Date && s.Status == "Active")
 			.OrderBy(s => s.Date)
 			.ThenBy(s => s.StartTime)
 			.ToListAsync();
 
-	public async Task<IEnumerable<ShowtimeModel>> FindAvailableShowtimes(Guid movieId, DateOnly? showDate = null) {
+	public async Task<IEnumerable<ShowtimeModel>> FindAvailableShowtimes(Guid movieId, DateTime? showDate = null) {
 		var query = Entities
 			.Where(s => s.MovieId == movieId && s.Status == "Active" && s.AvailableSeats > 0);
 
 		if (showDate.HasValue) {
-			query = query.Where(s => s.Date == showDate.Value);
+			query = query.Where(s => s.Date.Date == showDate.Value.Date);
 		}
 
 		return await query
@@ -55,11 +55,11 @@ public sealed class ShowtimeRepository(ApplicationDbContext context) : CrudRepos
 	}
 
 	public async Task<IEnumerable<ShowtimeModel>> FindNowPlaying() {
-		var today = DateOnly.FromDateTime(DateTime.Today);
+		var today = DateTime.Today;
 		var futureDate = today.AddDays(30);
 
 		return await Entities
-			.Where(s => s.Date >= today && s.Date <= futureDate && s.Status == "Active")
+			.Where(s => s.Date.Date >= today && s.Date.Date <= futureDate && s.Status == "Active")
 			.OrderBy(s => s.Date)
 			.ThenBy(s => s.StartTime)
 			.ToListAsync();

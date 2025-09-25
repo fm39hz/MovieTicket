@@ -36,11 +36,11 @@ public static class Program {
 			});
 		}
 
-		app.MapControllers();
+		app.UseHttpsRedirection();
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.UseMiddlewareScope();
-		app.UseHttpsRedirection();
+		app.MapControllers();
 		await app.RunAsync();
 	}
 
