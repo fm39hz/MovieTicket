@@ -37,6 +37,7 @@ public static class Program {
 		}
 
 		app.UseHttpsRedirection();
+		app.UseCors("AllowAll");
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.UseMiddlewareScope();
@@ -82,6 +83,13 @@ public static class Program {
 					},
 					Array.Empty<string>()
 				}
+			});
+		});
+		builder.Services.AddCors(options => {
+			options.AddPolicy("AllowAll", policy => {
+				policy.AllowAnyOrigin()
+					  .AllowAnyHeader()
+					  .AllowAnyMethod();
 			});
 		});
 		builder.Services.AddServices();
