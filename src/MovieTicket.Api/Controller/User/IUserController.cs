@@ -6,4 +6,6 @@ using Domain.Entity.User;
 
 public interface IUserController :
 	IReadOneController<UserModel, UserResponseDto>,
-	IUpdateController<UserModel, UserResponseDto, UserRequestDto>;
+	IUpdateController<UserModel, UserResponseDto, UserRequestDto> {
+	public Task<IValueHttpResult<UserResponseDto>> Info();
+}
