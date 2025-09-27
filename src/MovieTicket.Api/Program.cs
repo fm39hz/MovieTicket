@@ -94,6 +94,7 @@ public static class Program {
 		});
 		builder.Services.AddServices();
 		builder.Services.AddJwt(builder.Configuration);
+		builder.Services.AddPayOS(builder.Configuration);
 		return builder.Build();
 	}
 }

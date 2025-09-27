@@ -3,6 +3,7 @@ namespace MovieTicket.Api.Extension;
 using Application.Service.Contract;
 using Application.Service.Implementation;
 using Domain.Common.Repository;
+using Infrastructure.PayOS;
 using Infrastructure.Persistence.Repository;
 using JetBrains.Annotations;
 
@@ -21,6 +22,9 @@ public static class ServiceExtension {
 		service.AddScoped<IShowtimeService, ShowtimeService>();
 		service.AddScoped<IBookingRepository, BookingRepository>();
 		service.AddScoped<IBookingService, BookingService>();
+		service.AddScoped<IPaymentRepository, PaymentRepository>();
+		service.AddScoped<IPaymentService, PaymentService>();
+		service.AddScoped<IPayOSService, PayOSPaymentService>();
 		service.AddScoped<IStatisticsService, StatisticsService>();
 		return service;
 	}

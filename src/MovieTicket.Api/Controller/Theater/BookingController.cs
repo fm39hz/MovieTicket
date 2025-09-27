@@ -1,5 +1,6 @@
 namespace MovieTicket.Api.Controller.Theater;
 
+using Application.Dto.Payment;
 using Application.Dto.Theater;
 using Application.Service.Contract;
 using Domain.Constant;
@@ -10,7 +11,7 @@ using MovieTicket.Application.Dto.Common;
 [ApiController]
 [Route(RouteConstant.CONTROLLER)]
 [Authorize(RoleConstant.USER)]
-public sealed class BookingController(IBookingService service) : ControllerBase, IBookingController {
+public sealed class BookingController(IBookingService service, IPaymentService paymentService) : ControllerBase, IBookingController {
 
 	[HttpGet("{id:guid}")]
 	public async Task<IValueHttpResult<BookingResponseDto>> FindOne(Guid id) {
@@ -60,4 +61,39 @@ public sealed class BookingController(IBookingService service) : ControllerBase,
 		var booking = await service.BookTickets(userId, showtimeId, seatNumbers);
 		return TypedResults.Created($"/api/v1/booking/{booking.Id}", new BookingResponseDto(booking));
 	}
+
+	[HttpPost("book-with-payment")]
+	public async Task<IValueHttpResult<BookingWithPaymentResponse>> BookTicketsWithPayment([FromBody] BookWithPaymentRequest request) {
+		// Create booking first
+		var booking = await service.BookTickets(request.UserId, request.ShowtimeId, request.SeatNumbers);
+
+		// Create payment link
+		var paymentRequest = new CreatePaymentRequestDto {
+			BookingId = booking.Id,
+			Amount = booking.TotalAmount,
+			Description = $"Movie ticket booking - {booking.BookingReference}",
+			ReturnUrl = request.ReturnUrl,
+			CancelUrl = request.CancelUrl
+		};
+
+		var payment = await paymentService.CreatePaymentLinkAsync(paymentRequest);
+
+		return TypedResults.Created($"/api/v1/booking/{booking.Id}", new BookingWithPaymentResponse(
+			Booking: new BookingResponseDto(booking),
+			Payment: payment
+		));
+	}
 }
+
+public sealed record BookWithPaymentRequest(
+	Guid UserId,
+	Guid ShowtimeId,
+	string[] SeatNumbers,
+	string ReturnUrl,
+	string CancelUrl
+);
+
+public sealed record BookingWithPaymentResponse(
+	BookingResponseDto Booking,
+	PaymentResponseDto Payment
+);

@@ -1,6 +1,7 @@
 namespace MovieTicket.Infrastructure.Persistence.Database;
 
 using Domain.Entity.Movie;
+using Domain.Entity.Payment;
 using Domain.Entity.Theater;
 using Domain.Entity.User;
 using JetBrains.Annotations;
@@ -13,4 +14,5 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 	[UsedImplicitly] private DbSet<ScreenModel> Screens { get; set; } = null!;
 	[UsedImplicitly] private DbSet<ShowtimeModel> Showtimes { get; set; } = null!;
 	[UsedImplicitly] private DbSet<BookingModel> Bookings { get; set; } = null!;
+	[UsedImplicitly] private DbSet<PaymentModel> Payments { get; set; } = null!;
 }
