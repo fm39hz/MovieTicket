@@ -1,5 +1,6 @@
 namespace MovieTicket.Api.Controller.Theater;
 
+using System.Security.Claims;
 using Application.Dto.Payment;
 using Application.Dto.Theater;
 using Application.Service.Contract;
@@ -82,6 +83,38 @@ public sealed class BookingController(IBookingService service, IPaymentService p
 			Booking: new BookingResponseDto(booking),
 			Payment: payment
 		));
+	}
+
+	[HttpGet("my-history")]
+	public async Task<IActionResult> GetMyBookingHistory() {
+		var claimsIdentity = User.Identity as ClaimsIdentity;
+		var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+		if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId)) {
+			return Unauthorized();
+		}
+
+		var bookingHistory = await service.GetBookingHistoryAsync(userId);
+		return Ok(bookingHistory);
+	}
+
+	[HttpGet("my-history/filtered")]
+	public async Task<IActionResult> GetMyBookingHistoryFiltered(
+		[FromQuery] string? status = null,
+		[FromQuery] DateTime? dateFrom = null,
+		[FromQuery] DateTime? dateTo = null,
+		[FromQuery] int pageSize = 20,
+		[FromQuery] int pageNumber = 1) {
+
+		var claimsIdentity = User.Identity as ClaimsIdentity;
+		var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+		if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId)) {
+			return Unauthorized();
+		}
+
+		var bookingHistory = await service.GetBookingHistoryWithFiltersAsync(userId, status, dateFrom, dateTo, pageSize, pageNumber);
+		return Ok(bookingHistory);
 	}
 }
 

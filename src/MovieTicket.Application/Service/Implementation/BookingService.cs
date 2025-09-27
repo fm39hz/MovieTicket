@@ -1,10 +1,11 @@
 namespace MovieTicket.Application.Service.Implementation;
 
 using Contract;
+using Dto.Theater;
 using Domain.Common.Repository;
 using Domain.Entity.Theater;
 
-public sealed class BookingService(IBookingRepository repository) : IBookingService {
+public sealed class BookingService(IBookingRepository repository, IPaymentService paymentService) : IBookingService {
 	public async Task<BookingModel?> FindOne(Guid id) => await repository.FindOne(id);
 
 	public async Task<IEnumerable<BookingModel>> FindAll() => await repository.FindAll();
@@ -19,6 +20,55 @@ public sealed class BookingService(IBookingRepository repository) : IBookingServ
 	public async Task<int> Delete(Guid id) => await repository.Delete(id);
 
 	public async Task<IEnumerable<BookingModel>> FindByUserId(Guid userId) => await repository.FindByUserId(userId);
+
+	public async Task<IEnumerable<BookingHistoryResponseDto>> GetBookingHistoryAsync(Guid userId) {
+		var bookings = await repository.FindByUserIdWithDetails(userId);
+		var bookingHistory = new List<BookingHistoryResponseDto>();
+
+		foreach (var booking in bookings) {
+			var historyDto = new BookingHistoryResponseDto(booking);
+
+			// Get payment information if exists
+			var payment = await paymentService.GetPaymentByBookingIdAsync(booking.Id);
+			if (payment != null) {
+				historyDto.PaymentUrl = payment.PaymentUrl;
+				historyDto.PaymentCreatedAt = payment.CreatedAt;
+				historyDto.PaymentUpdatedAt = payment.UpdatedAt;
+			}
+
+			bookingHistory.Add(historyDto);
+		}
+
+		return bookingHistory;
+	}
+
+	public async Task<IEnumerable<BookingHistoryResponseDto>> GetBookingHistoryWithFiltersAsync(
+		Guid userId,
+		string? status = null,
+		DateTime? dateFrom = null,
+		DateTime? dateTo = null,
+		int pageSize = 20,
+		int pageNumber = 1) {
+
+		var bookings = await repository.FindByUserIdWithDetailsAndFilters(userId, status, dateFrom, dateTo, pageSize, pageNumber);
+		var bookingHistory = new List<BookingHistoryResponseDto>();
+
+		foreach (var booking in bookings) {
+			var historyDto = new BookingHistoryResponseDto(booking);
+
+			// Get payment information if exists
+			var payment = await paymentService.GetPaymentByBookingIdAsync(booking.Id);
+			if (payment != null) {
+				historyDto.PaymentUrl = payment.PaymentUrl;
+				historyDto.PaymentCreatedAt = payment.CreatedAt;
+				historyDto.PaymentUpdatedAt = payment.UpdatedAt;
+			}
+
+			bookingHistory.Add(historyDto);
+		}
+
+		return bookingHistory;
+	}
 
 	public async Task<IEnumerable<BookingModel>> FindByShowtimeId(Guid showtimeId) => await repository.FindByShowtimeId(showtimeId);
 

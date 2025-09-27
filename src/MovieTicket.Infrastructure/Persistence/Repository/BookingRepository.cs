@@ -12,6 +12,60 @@ public sealed class BookingRepository(ApplicationDbContext context) : CrudReposi
 			.OrderByDescending(b => b.BookingDate)
 			.ToListAsync();
 
+	public async Task<IEnumerable<BookingModel>> FindByUserIdWithDetails(Guid userId) =>
+		await Entities
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Movie)
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Theater)
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Screen)
+			.Where(b => b.UserId == userId)
+			.OrderByDescending(b => b.BookingDate)
+			.ToListAsync();
+
+	public async Task<IEnumerable<BookingModel>> FindByUserIdWithDetailsAndFilters(
+		Guid userId,
+		string? status = null,
+		DateTime? dateFrom = null,
+		DateTime? dateTo = null,
+		int pageSize = 20,
+		int pageNumber = 1) {
+
+		var query = Entities
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Movie)
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Theater)
+			.Include(b => b.Showtime)
+				.ThenInclude(s => s!.Screen)
+			.Where(b => b.UserId == userId);
+
+		// Apply status filter (booking status or payment status)
+		if (!string.IsNullOrEmpty(status)) {
+			query = query.Where(b => string.Equals(b.BookingStatus, status, StringComparison.OrdinalIgnoreCase) ||
+									 string.Equals(b.PaymentStatus, status, StringComparison.OrdinalIgnoreCase));
+		}
+
+		// Apply date range filter
+		if (dateFrom.HasValue) {
+			query = query.Where(b => b.BookingDate >= dateFrom.Value);
+		}
+
+		if (dateTo.HasValue) {
+			query = query.Where(b => b.BookingDate <= dateTo.Value);
+		}
+
+		// Apply pagination
+		var skip = (pageNumber - 1) * pageSize;
+
+		return await query
+			.OrderByDescending(b => b.BookingDate)
+			.Skip(skip)
+			.Take(pageSize)
+			.ToListAsync();
+	}
+
 	public async Task<IEnumerable<BookingModel>> FindByShowtimeId(Guid showtimeId) =>
 		await Entities
 			.Where(b => b.ShowtimeId == showtimeId)
