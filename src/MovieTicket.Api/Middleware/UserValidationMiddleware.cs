@@ -3,6 +3,7 @@ namespace MovieTicket.Api.Middleware;
 using System.Security.Claims;
 using Controller.User;
 using Domain.Constant;
+using Microsoft.AspNetCore.Authorization;
 
 public class UserValidationMiddleware(RequestDelegate next) {
 	private static readonly Action<ILogger, Guid, Exception?> _dUserIdDenial =
@@ -15,6 +16,7 @@ public class UserValidationMiddleware(RequestDelegate next) {
 		if (pathSegments is not { Length: > 0 } ||
 			!Guid.TryParse(pathSegments[^1], out var parsedId) ||
 			user.Identity?.IsAuthenticated != true ||
+			HasAllowAnonymousAttribute(context) ||
 			user.ValidateScope(parsedId)
 			) {
 			await next(context);
@@ -24,6 +26,11 @@ public class UserValidationMiddleware(RequestDelegate next) {
 		UserIdDenial(logger, parsedId);
 		context.Response.StatusCode = 400;
 		await context.Response.WriteAsync("Bad Request");
+	}
+
+	private static bool HasAllowAnonymousAttribute(HttpContext context) {
+		var endpoint = context.GetEndpoint();
+		return endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() != null;
 	}
 
 	public void UserIdDenial(ILogger logger, Guid userId) =>
