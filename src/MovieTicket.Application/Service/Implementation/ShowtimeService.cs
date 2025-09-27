@@ -40,18 +40,31 @@ public sealed class ShowtimeService(IShowtimeRepository repository) : IShowtimeS
 		if (showtime?.Screen == null) return null;
 
 		var totalSeats = showtime.Screen.TotalSeats;
-		var bookedSeatsList = string.IsNullOrEmpty(showtime.BookedSeats)
-			? new List<string>()
-			: showtime.BookedSeats.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+		var seatLayout = showtime.Screen.SeatLayout;
 
+		// Use booked seats list directly from the model
+		var bookedSeatsList = showtime.BookedSeatsList ?? new List<int>();
 		var bookedSeatsCount = bookedSeatsList.Count;
 		var availableSeats = totalSeats - bookedSeatsCount;
+
+		// Generate all seats list as integers (1, 2, 3, ..., totalSeats)
+		var allSeatsList = GenerateAllSeats(totalSeats);
+
+		// Generate available seats list (all seats minus booked seats)
+		var availableSeatsList = allSeatsList.Except(bookedSeatsList).ToList();
 
 		return new SeatAvailabilityDto {
 			TotalSeats = totalSeats,
 			AvailableSeats = availableSeats,
 			BookedSeatsCount = bookedSeatsCount,
-			BookedSeatsList = bookedSeatsList
+			BookedSeatsList = bookedSeatsList,
+			AllSeatsList = allSeatsList,
+			AvailableSeatsList = availableSeatsList,
+			SeatLayout = seatLayout
 		};
+	}
+
+	private static List<int> GenerateAllSeats(int totalSeats) {
+		return Enumerable.Range(1, totalSeats).ToList();
 	}
 }

@@ -9,4 +9,5 @@ public interface IShowtimeController : ICrudController<ShowtimeModel, ShowtimeRe
 	public Task<IValueHttpResult<IEnumerable<ShowtimeResponseDto>>> FindByTheaterId(Guid theaterId);
 	public Task<IValueHttpResult<IEnumerable<ShowtimeResponseDto>>> FindNowPlaying();
 	public Task<IValueHttpResult<IEnumerable<ShowtimeResponseDto>>> FindAvailable(Guid movieId, DateTime? showDate = null);
+	public Task<IValueHttpResult<SeatAvailabilityDto>> GetSeatAvailability(Guid id);
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 public abstract class CrudRepository<T>(DbContext context) : IRepository<T> where T : BaseModel, IModel {
 	protected DbSet<T> Entities => context.Set<T>();
-	public async Task<T?> FindOne(Guid id) => await Entities.FirstOrDefaultAsync(entity => entity.Id == id);
+	public virtual async Task<T?> FindOne(Guid id) => await Entities.FirstOrDefaultAsync(entity => entity.Id == id);
 
 	public async Task<IEnumerable<T>> FindAll() => await Entities.ToListAsync();
 

@@ -6,6 +6,11 @@ using Domain.Entity.Theater;
 using Microsoft.EntityFrameworkCore;
 
 public sealed class ShowtimeRepository(ApplicationDbContext context) : CrudRepository<ShowtimeModel>(context), IShowtimeRepository {
+	public override async Task<ShowtimeModel?> FindOne(Guid id) =>
+		await Entities
+			.Include(s => s.Screen)
+			.FirstOrDefaultAsync(s => s.Id == id);
+
 	public async Task<IEnumerable<ShowtimeModel>> FindByMovieId(Guid movieId) =>
 		await Entities
 			.Where(s => s.MovieId == movieId && s.Status == "Active")

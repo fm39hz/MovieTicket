@@ -1,6 +1,7 @@
 namespace MovieTicket.Domain.Entity.Theater;
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Movie;
 
 public sealed record ShowtimeModel : BaseModel {
@@ -13,7 +14,9 @@ public sealed record ShowtimeModel : BaseModel {
 		Date = showtime.Date;
 		TicketPrice = showtime.TicketPrice;
 		AvailableSeats = showtime.AvailableSeats;
-		BookedSeats = showtime.BookedSeats;
+		BookedSeatsList = showtime.BookedSeatsList;
+		AllSeatsList = showtime.AllSeatsList;
+		AvailableSeatsList = showtime.AvailableSeatsList;
 		Status = showtime.Status;
 	}
 
@@ -40,7 +43,13 @@ public sealed record ShowtimeModel : BaseModel {
 
 	public int AvailableSeats { get; init; }
 
-	public string BookedSeats { get; init; } = string.Empty;
+	public List<int> BookedSeatsList { get; init; } = new();
+
+	[NotMapped]
+	public List<int> AllSeatsList { get; init; } = new();
+
+	[NotMapped]
+	public List<int> AvailableSeatsList { get; init; } = new();
 
 	[Required]
 	public string Status { get; init; } = "Active";

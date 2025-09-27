@@ -11,7 +11,7 @@ public record ShowtimeRequestDto(
 	DateTime Date,
 	decimal TicketPrice,
 	int AvailableSeats,
-	string BookedSeats,
+	List<int> BookedSeatsList,
 	string Status
 ) : IRequestDto<ShowtimeModel> {
 	public ShowtimeModel ToModel() => new() {
@@ -23,7 +23,7 @@ public record ShowtimeRequestDto(
 		Date = Date,
 		TicketPrice = TicketPrice,
 		AvailableSeats = AvailableSeats,
-		BookedSeats = BookedSeats,
+		BookedSeatsList = BookedSeatsList,
 		Status = Status
 	};
 }

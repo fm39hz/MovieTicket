@@ -13,6 +13,6 @@ public class ShowtimeResponseDto(ShowtimeModel showtime) : IResponseDto {
 	public DateTime Date { get; init; } = showtime.Date;
 	public decimal TicketPrice { get; init; } = showtime.TicketPrice;
 	public int AvailableSeats { get; init; } = showtime.AvailableSeats;
-	public string BookedSeats { get; init; } = showtime.BookedSeats;
+	public List<int> BookedSeatsList { get; init; } = showtime.BookedSeatsList;
 	public string Status { get; init; } = showtime.Status;
 }
