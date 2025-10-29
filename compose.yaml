@@ -14,16 +14,14 @@ services:
         restart: unless-stopped
 
     api:
-        image: movieticket-api
+        image: fm39hz/movieticket-api:latest
         container_name: movieticket-api
-        build:
-            context: .
-            dockerfile: src/MovieTicket.Api/Dockerfile
+        build: .
         ports:
             - "8080:8080"
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
-            - ConnectionStrings__MariaDb=server=mariadb;user id=Admin;password=TesT;database=movieticket
+            - ConnectionStrings__MariaDb=server=movieticket-db;user id=Admin;password=TesT;database=movieticket
             - OpenApi__ServerUrl=http://localhost:8080
         depends_on:
             - mariadb
